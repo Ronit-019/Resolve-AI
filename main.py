@@ -1,15 +1,20 @@
+import uuid
 from app.graph import graph
+
+
+def create_session():
+    return {
+        "configurable": {
+            "thread_id": str(uuid.uuid4())
+        }
+    }
 
 
 def main():
     print("Resolve - Customer Support Chatbot")
-    print("Type 'exit' to quit.\n")
+    print("Commands: /new = New conversation | exit = Quit\n")
 
-    config = {
-        "configurable": {
-            "thread_id": "resolve-session-1"
-        }
-    }
+    config = create_session()
 
     while True:
         query = input("You: ").strip()
@@ -17,6 +22,11 @@ def main():
         if query.lower() == "exit":
             print("Goodbye!")
             break
+
+        if query.lower() == "/new":
+            config = create_session()
+            print("\nStarted a new conversation.\n")
+            continue
 
         if not query:
             continue
