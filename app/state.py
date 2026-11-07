@@ -1,5 +1,4 @@
-from typing import TypedDict
+from langgraph.graph import MessagesState
 
-class ChatState(TypedDict):
-    user_input: str
-    response: str
+class ChatState(MessagesState):
+    pass

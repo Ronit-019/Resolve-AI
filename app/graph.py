@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langgraph.graph import StateGraph, START, END
+from langgraph.checkpoint.memory import InMemorySaver
 
 from app.state import ChatState
 
@@ -35,20 +36,18 @@ Your boundaries:
 - Never promise outcomes you cannot guarantee.
 - Stay focused on customer support and order management.
 - If information is unavailable, communicate that honestly.
-
-Your primary objective is to resolve customer issues accurately
-while providing a smooth customer experience.
 """
 
 def support_node(state: ChatState):
-    response = llm.invoke([
+    messages = [
         ("system", SYSTEM_PROMPT),
-        ("human", state["user_input"])
-    ])
+        *state["messages"]
+    ]
 
-    return {
-        "response": response.content
-    }
+    response = llm.invoke(messages)
+
+    return {"messages": [response]}
+
 
 builder = StateGraph(ChatState)
 
@@ -57,4 +56,6 @@ builder.add_node("support", support_node)
 builder.add_edge(START, "support")
 builder.add_edge("support", END)
 
-graph = builder.compile()
+memory = InMemorySaver()
+
+graph = builder.compile(checkpointer=memory)
