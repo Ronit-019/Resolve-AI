@@ -15,11 +15,22 @@ def initialize_database():
             CREATE TABLE IF NOT EXISTS orders (
                 id TEXT PRIMARY KEY,
                 customer TEXT NOT NULL,
+                email TEXT,
                 amount REAL NOT NULL,
                 status TEXT NOT NULL,
                 address TEXT NOT NULL
             )
         """)
+
+        # Add email column to existing databases
+        columns = [
+            row[1] for row in conn.execute(
+                "PRAGMA table_info(orders)"
+            ).fetchall()
+        ]
+
+        if "email" not in columns:
+            conn.execute("ALTER TABLE orders ADD COLUMN email TEXT")
 
         conn.execute("""
             CREATE TABLE IF NOT EXISTS refunds (

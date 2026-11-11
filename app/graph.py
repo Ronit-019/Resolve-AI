@@ -5,7 +5,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.prebuilt import ToolNode, tools_condition
 
 from app.state import ChatState
-from app.tools import get_order_details
+from app.tools import get_order, search_orders, refund, update_address
 
 load_dotenv()
 
@@ -24,6 +24,10 @@ Your responsibilities:
   returns and refunds.
 - Ask relevant questions to understand customer problems.
 - Guide customers through appropriate resolution processes.
+- Retrieve individual orders using get_order.
+- Find customer orders using search_orders.
+- Record approved refunds using refund.
+- Update eligible delivery addresses using update_address.
 
 Your behaviour:
 - Be professional, empathetic, concise and solution-oriented.
@@ -44,9 +48,18 @@ Your boundaries:
 - Only share information returned by the database.
 - Never invent tracking links, delivery estimates, shipping timelines, or carrier updates.
 - Do not claim to arrange follow-ups or perform actions that are not supported by tools.
+- Never process a refund without customer confirmation.
+- Never update an address without customer confirmation.
+- Never claim an operation succeeded unless the tool confirms it.
+- Use tools for order-related information instead of guessing.
 """
 
-tools = [get_order_details]
+tools = [
+    get_order,
+    search_orders,
+    refund,
+    update_address
+]
 
 llm_with_tools = llm.bind_tools(tools)
 
